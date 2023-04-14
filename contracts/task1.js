@@ -34,17 +34,19 @@ async function main() {
     const cName = 'Example';
     const cCode = fs.readFileSync(__dirname + '/' + fName, 'utf-8')
     
-    myCompiler(solc, fName, cName, cCode);
+    myCompiler(solc, fName, cName, cCode); 
 
     const ABI = JSON.parse(fs.readFileSync(__dirname + '/' + 'Example.abi', 'utf-8'));
     const bytecode = fs.readFileSync(__dirname + '/' + 'Example.bin', 'utf-8');
 
     const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:7545');
+    //const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/XdE1v9zVDSoRe6S5013cteykw1ZDC0u9');
+
     const list = await provider.listAccounts();
     const signer = provider.getSigner(list[0]);
     let exampleFactory = new ethers.ContractFactory(ABI, bytecode, signer);
     console.log(exampleFactory.interface.functions);
-    let exampleContract = await exampleFactory.deploy(0, 0, "");
+    let exampleContract = await exampleFactory.deploy(1, 2, "hi");
     await exampleContract.deployTransaction.wait().then(console.log);
 
     while (true) {
@@ -76,10 +78,9 @@ async function main() {
         console.log(await exampleContract.init(coin));
     } if (choice === '5') {
         let adr = readlineSync.question('Введите адрес: ');
-        let _x = readlineSync.question('Введите число x: ');
+        let number = readlineSync.question('Введите число number: ');
         let _str = readlineSync.question('Введите стоку: ');
-        let st = {x: _x, str: _str}
-        console.log(await exampleContract.addToMap(adr, st));
+        console.log(await exampleContract.addToMap(adr, [number, _str]));
     } if (choice === '6') {
         console.log(await exampleContract.getData());
     } if (choice === '7') {
